@@ -422,8 +422,62 @@ body {
   color: #f85149;
 }
 
-/* ─── Recycle Bin ─── */
-#deleted-list {
+/* ─── Completed Section ─── */
+.completed-section {
+  list-style: none;
+  margin-top: 8px;
+  border-top: 1px solid #21262d;
+  padding-top: 8px;
+}
+
+.completed-header {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  cursor: pointer;
+  padding: 8px 4px;
+  user-select: none;
+  border-radius: 6px;
+  transition: background 0.15s;
+}
+
+.completed-header:hover {
+  background: #161b22;
+}
+
+.completed-chevron {
+  font-size: 11px;
+  color: #8b949e;
+  transition: transform 0.2s;
+  flex-shrink: 0;
+}
+
+.completed-chevron.open {
+  transform: rotate(90deg);
+}
+
+.completed-label {
+  font-size: 13px;
+  font-weight: 600;
+  color: #8b949e;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.completed-body {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin-top: 8px;
+}
+
+.completed-body.closed {
+  display: none;
+}
+
+/* ─── Bin ─── */
+#deleted-list,
+#deleted-labels-list {
   list-style: none;
   display: flex;
   flex-direction: column;
@@ -494,6 +548,24 @@ body {
   font-size: 14px;
   color: #8b949e;
   margin-bottom: 16px;
+}
+
+/* ─── Deleted Labels ─── */
+.deleted-label-item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 14px 16px;
+  background: #161b22;
+  border: 1px solid #21262d;
+  border-radius: 8px;
+}
+
+.deleted-label-name {
+  flex: 1;
+  font-size: 14px;
+  font-weight: 600;
+  color: #79c0ff;
 }
 
 /* ─── Shared ─── */

@@ -3,19 +3,19 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>taskflow</title>
+  <title>Taskflair</title>
   <link rel="stylesheet" href="style.css" />
 </head>
 <body>
   <div id="app">
     <nav id="sidebar">
       <div class="sidebar-header">
-        <h1>taskflow</h1>
+        <h1>Taskflair</h1>
       </div>
       <div class="nav-items">
         <button class="nav-item active" data-view="dashboard">Dashboard</button>
         <button class="nav-item" data-view="tasks">Tasks</button>
-        <button class="nav-item" data-view="recycle">Recycle Bin</button>
+        <button class="nav-item" data-view="bin">Bin</button>
       </div>
     </nav>
 
@@ -66,11 +66,15 @@
         <ul id="task-list"></ul>
       </section>
 
-      <!-- ─── Recycle Bin ─── -->
-      <section id="view-recycle" class="view">
-        <h2>Recycle Bin</h2>
-        <p class="bin-info" id="bin-info">0 deleted tasks</p>
+      <!-- ─── Bin ─── -->
+      <section id="view-bin" class="view">
+        <h2>Bin</h2>
+
+        <h3>Deleted Tasks</h3>
         <ul id="deleted-list"></ul>
+
+        <h3>Deleted Labels</h3>
+        <ul id="deleted-labels-list"></ul>
       </section>
     </main>
   </div>

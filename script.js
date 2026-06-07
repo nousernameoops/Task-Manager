@@ -5,6 +5,7 @@ const DEFAULT_CATEGORIES = ['Client Work', 'Bootcamp', 'Side Hustle', 'Personal 
 const state = {
   tasks: [],
   deletedTasks: [],
+  deletedCategories: [],
   categories: [...DEFAULT_CATEGORIES],
   currentView: 'tasks'
 };
@@ -27,6 +28,7 @@ function load() {
     const d = JSON.parse(raw);
     state.tasks = d.tasks || [];
     state.deletedTasks = d.deletedTasks || [];
+    state.deletedCategories = d.deletedCategories || [];
     state.categories = d.categories?.length ? d.categories : [...DEFAULT_CATEGORIES];
     state.currentView = d.currentView || 'tasks';
   } catch (e) { /* use defaults */ }
@@ -95,6 +97,14 @@ function addCategory(name) {
 
 function removeCategory(name) {
   state.categories = state.categories.filter(c => c !== name);
+  state.deletedCategories.push(name);
+  save();
+  renderAll();
+}
+
+function restoreCategory(name) {
+  state.deletedCategories = state.deletedCategories.filter(c => c !== name);
+  state.categories.push(name);
   save();
   renderAll();
 }
@@ -104,7 +114,7 @@ function renderAll() {
   populateCategorySelect();
   renderCategoryTags();
   renderTasks();
-  renderDeleted();
+  renderBin();
   renderDashboard();
 }
 
@@ -125,21 +135,49 @@ function renderCategoryTags() {
   state.categories.forEach(c => {
     const tag = document.createElement('span');
     tag.className = 'cat-tag';
-
     const name = document.createElement('span');
     name.textContent = c;
-
     const del = document.createElement('button');
     del.className = 'cat-tag-del';
     del.textContent = '×';
     del.dataset.category = c;
-
     tag.append(name, del);
     container.appendChild(tag);
   });
 }
 
+function createTaskItem(task) {
+  const li = document.createElement('li');
+  li.className = 'task-item' + (task.done ? ' completed' : '');
+  li.dataset.id = task.id;
+
+  const check = document.createElement('input');
+  check.type = 'checkbox';
+  check.className = 'task-check';
+  check.checked = task.done;
+
+  const cat = document.createElement('span');
+  cat.className = 'task-category';
+  cat.textContent = task.category;
+
+  const text = document.createElement('span');
+  text.className = 'task-text';
+  text.textContent = task.text;
+
+  const del = document.createElement('button');
+  del.className = 'task-delete';
+  del.textContent = '✕';
+  del.setAttribute('aria-label', 'Delete task');
+
+  li.append(check, cat, text, del);
+  return li;
+}
+
 function renderTasks() {
+  const active = state.tasks.filter(t => !t.done);
+  const completed = state.tasks.filter(t => t.done);
+  active.sort((a, b) => a.createdAt - b.createdAt);
+
   const list = document.getElementById('task-list');
   list.innerHTML = '';
 
@@ -148,80 +186,106 @@ function renderTasks() {
     return;
   }
 
-  state.tasks.forEach(task => {
-    const li = document.createElement('li');
-    li.className = 'task-item' + (task.done ? ' completed' : '');
-    li.dataset.id = task.id;
+  active.forEach(task => list.appendChild(createTaskItem(task)));
 
-    const check = document.createElement('input');
-    check.type = 'checkbox';
-    check.className = 'task-check';
-    check.checked = task.done;
+  if (!completed.length) return;
 
-    const cat = document.createElement('span');
-    cat.className = 'task-category';
-    cat.textContent = task.category;
+  const section = document.createElement('li');
+  section.className = 'completed-section';
 
-    const text = document.createElement('span');
-    text.className = 'task-text';
-    text.textContent = task.text;
+  const header = document.createElement('div');
+  header.className = 'completed-header';
 
-    const del = document.createElement('button');
-    del.className = 'task-delete';
-    del.textContent = '✕';
-    del.setAttribute('aria-label', 'Delete task');
+  const chevron = document.createElement('span');
+  chevron.className = 'completed-chevron';
+  chevron.textContent = '▶';
 
-    li.append(check, cat, text, del);
-    list.appendChild(li);
+  const label = document.createElement('span');
+  label.className = 'completed-label';
+  label.textContent = 'Completed (' + completed.length + ')';
+
+  header.append(chevron, label);
+
+  const body = document.createElement('div');
+  body.className = 'completed-body closed';
+
+  completed.forEach(task => body.appendChild(createTaskItem(task)));
+
+  section.append(header, body);
+  list.appendChild(section);
+
+  header.addEventListener('click', () => {
+    const isOpen = body.classList.toggle('closed');
+    chevron.classList.toggle('open', !isOpen);
   });
 }
 
-function renderDeleted() {
+function renderBin() {
   const list = document.getElementById('deleted-list');
-  const info = document.getElementById('bin-info');
   list.innerHTML = '';
 
   const count = state.deletedTasks.length;
-  info.textContent = count + ' deleted task' + (count !== 1 ? 's' : '');
-
   if (!count) {
-    list.innerHTML = '<li class="empty-state">Recycle bin is empty.</li>';
-    return;
+    list.innerHTML = '<li class="empty-state" style="padding:24px">No deleted tasks.</li>';
+  } else {
+    state.deletedTasks.forEach(task => {
+      const li = document.createElement('li');
+      li.className = 'deleted-item';
+      li.dataset.id = task.id;
+
+      const cat = document.createElement('span');
+      cat.className = 'task-category';
+      cat.textContent = task.category;
+
+      const text = document.createElement('span');
+      text.className = 'task-text' + (task.done ? ' done' : '');
+      text.textContent = task.text;
+
+      const time = document.createElement('span');
+      time.className = 'deleted-time';
+      const diff = Date.now() - task.deletedAt;
+      if (diff < 60000) time.textContent = 'now';
+      else if (diff < 3600000) time.textContent = Math.floor(diff / 60000) + 'm';
+      else if (diff < 86400000) time.textContent = Math.floor(diff / 3600000) + 'h';
+      else time.textContent = Math.floor(diff / 86400000) + 'd';
+
+      const restore = document.createElement('button');
+      restore.className = 'btn-restore';
+      restore.textContent = 'Restore';
+
+      const permDel = document.createElement('button');
+      permDel.className = 'btn-perm-delete';
+      permDel.textContent = '✕';
+      permDel.setAttribute('aria-label', 'Permanently delete');
+
+      li.append(cat, text, time, restore, permDel);
+      list.appendChild(li);
+    });
   }
 
-  state.deletedTasks.forEach(task => {
-    const li = document.createElement('li');
-    li.className = 'deleted-item';
-    li.dataset.id = task.id;
+  const labelsList = document.getElementById('deleted-labels-list');
+  labelsList.innerHTML = '';
 
-    const cat = document.createElement('span');
-    cat.className = 'task-category';
-    cat.textContent = task.category;
+  if (!state.deletedCategories.length) {
+    labelsList.innerHTML = '<li class="empty-state" style="padding:24px">No deleted labels.</li>';
+  } else {
+    state.deletedCategories.forEach(name => {
+      const li = document.createElement('li');
+      li.className = 'deleted-label-item';
 
-    const text = document.createElement('span');
-    text.className = 'task-text' + (task.done ? ' done' : '');
-    text.textContent = task.text;
+      const labelName = document.createElement('span');
+      labelName.className = 'deleted-label-name';
+      labelName.textContent = name;
 
-    const time = document.createElement('span');
-    time.className = 'deleted-time';
-    const diff = Date.now() - task.deletedAt;
-    if (diff < 60000) time.textContent = 'now';
-    else if (diff < 3600000) time.textContent = Math.floor(diff / 60000) + 'm';
-    else if (diff < 86400000) time.textContent = Math.floor(diff / 3600000) + 'h';
-    else time.textContent = Math.floor(diff / 86400000) + 'd';
+      const restore = document.createElement('button');
+      restore.className = 'btn-restore';
+      restore.textContent = 'Restore';
+      restore.dataset.label = name;
 
-    const restore = document.createElement('button');
-    restore.className = 'btn-restore';
-    restore.textContent = 'Restore';
-
-    const permDel = document.createElement('button');
-    permDel.className = 'btn-perm-delete';
-    permDel.textContent = '✕';
-    permDel.setAttribute('aria-label', 'Permanently delete');
-
-    li.append(cat, text, time, restore, permDel);
-    list.appendChild(li);
-  });
+      li.append(labelName, restore);
+      labelsList.appendChild(li);
+    });
+  }
 }
 
 function renderDashboard() {
@@ -239,7 +303,6 @@ function renderDashboard() {
   container.innerHTML = '';
 
   const allCats = [...new Set([...state.categories, ...state.tasks.map(t => t.category)])];
-
   if (!allCats.length) {
     container.innerHTML = '<p class="empty-state" style="padding:24px">No categories yet.</p>';
     return;
@@ -247,11 +310,9 @@ function renderDashboard() {
 
   const table = document.createElement('table');
   table.className = 'breakdown-table';
-
   const thead = document.createElement('thead');
   thead.innerHTML = '<tr><th>Category</th><th>Total</th><th>Done</th><th>Pending</th></tr>';
   table.appendChild(thead);
-
   const tbody = document.createElement('tbody');
   allCats.forEach(c => {
     const catTasks = state.tasks.filter(t => t.category === c);
@@ -298,6 +359,10 @@ document.getElementById('deleted-list').addEventListener('click', e => {
   else if (e.target.classList.contains('btn-perm-delete')) permanentDeleteTask(li.dataset.id);
 });
 
+document.getElementById('deleted-labels-list').addEventListener('click', e => {
+  if (e.target.classList.contains('btn-restore')) restoreCategory(e.target.dataset.label);
+});
+
 document.getElementById('category-tags').addEventListener('click', e => {
   if (e.target.classList.contains('cat-tag-del')) removeCategory(e.target.dataset.category);
 });
@@ -317,5 +382,5 @@ document.getElementById('new-category-input').addEventListener('keydown', e => {
 
 /* ========== Init ========== */
 load();
-if (!['dashboard', 'tasks', 'recycle'].includes(state.currentView)) state.currentView = 'tasks';
+if (!['dashboard', 'tasks', 'bin'].includes(state.currentView)) state.currentView = 'tasks';
 switchView(state.currentView);
