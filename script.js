@@ -232,7 +232,8 @@ function renderTasks() {
   section.append(header, body);
   list.appendChild(section);
 
-  header.addEventListener('click', () => {
+  header.addEventListener('click', (e) => {
+    if (!e.target.classList.contains('completed-chevron')) return;
     const isOpen = body.classList.toggle('closed');
     chevron.classList.toggle('open', !isOpen);
   });
