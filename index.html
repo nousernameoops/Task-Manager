@@ -3,33 +3,77 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Task Manager</title>
+  <title>taskflow</title>
   <link rel="stylesheet" href="style.css" />
 </head>
 <body>
   <div id="app">
-    <header>
-      <h1>tasks</h1>
-      <div class="stats">
-        <span>total: <strong id="total-count">0</strong></span>
-        <span>done: <strong id="done-count">0</strong></span>
+    <nav id="sidebar">
+      <div class="sidebar-header">
+        <h1>taskflow</h1>
       </div>
-    </header>
+      <div class="nav-items">
+        <button class="nav-item active" data-view="dashboard">Dashboard</button>
+        <button class="nav-item" data-view="tasks">Tasks</button>
+        <button class="nav-item" data-view="recycle">Recycle Bin</button>
+      </div>
+    </nav>
 
-    <form id="task-form">
-      <input type="text" id="task-input" placeholder="Add a new task…" autocomplete="off" required />
-      <select id="category-select">
-        <option value="Client Work">Client Work</option>
-        <option value="Bootcamp">Bootcamp</option>
-        <option value="Side Hustle">Side Hustle</option>
-        <option value="Personal Gigs">Personal Gigs</option>
-      </select>
-      <button type="submit" id="add-btn">+ Add Task</button>
-    </form>
+    <main id="main">
+      <!-- ─── Dashboard ─── -->
+      <section id="view-dashboard" class="view">
+        <h2>Dashboard</h2>
+        <div class="stats-grid">
+          <div class="stat-card">
+            <span class="stat-label">Total Tasks</span>
+            <span class="stat-value" id="d-total">0</span>
+          </div>
+          <div class="stat-card">
+            <span class="stat-label">Completed</span>
+            <span class="stat-value" id="d-completed">0</span>
+          </div>
+          <div class="stat-card">
+            <span class="stat-label">Pending</span>
+            <span class="stat-value" id="d-pending">0</span>
+          </div>
+          <div class="stat-card">
+            <span class="stat-label">Deleted</span>
+            <span class="stat-value" id="d-deleted">0</span>
+          </div>
+        </div>
+        <h3>Category Breakdown</h3>
+        <div id="category-breakdown"></div>
+      </section>
 
-    <ul id="task-list"></ul>
+      <!-- ─── Tasks ─── -->
+      <section id="view-tasks" class="view active">
+        <h2>Tasks</h2>
+        <form id="task-form">
+          <input type="text" id="task-input" placeholder="Add a new task…" autocomplete="off" required />
+          <select id="category-select"></select>
+          <button type="submit" id="add-btn">+ Add Task</button>
+        </form>
+        <div id="category-manager">
+          <div class="cm-header">
+            <span class="cm-label">Labels</span>
+          </div>
+          <div id="category-tags"></div>
+          <div class="cm-add-row">
+            <input type="text" id="new-category-input" placeholder="New label…" />
+            <button id="add-category-btn">+ Add</button>
+          </div>
+        </div>
+        <ul id="task-list"></ul>
+      </section>
+
+      <!-- ─── Recycle Bin ─── -->
+      <section id="view-recycle" class="view">
+        <h2>Recycle Bin</h2>
+        <p class="bin-info" id="bin-info">0 deleted tasks</p>
+        <ul id="deleted-list"></ul>
+      </section>
+    </main>
   </div>
-
   <script src="script.js"></script>
 </body>
 </html>
