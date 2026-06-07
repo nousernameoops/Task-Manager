@@ -85,6 +85,13 @@ function permanentDeleteTask(id) {
   renderAll();
 }
 
+function emptyBin() {
+  if (!state.deletedTasks.length) return;
+  state.deletedTasks = [];
+  save();
+  renderAll();
+}
+
 /* ========== Category Management ========== */
 function addCategory(name) {
   name = name.trim();
@@ -113,6 +120,7 @@ function restoreCategory(name) {
 function renderAll() {
   populateCategorySelect();
   renderCategoryTags();
+
   renderTasks();
   renderBin();
   renderDashboard();
@@ -184,6 +192,16 @@ function renderTasks() {
   if (!state.tasks.length) {
     list.innerHTML = '<li class="empty-state">No tasks yet. Add one above.</li>';
     return;
+  }
+
+  if (active.length) {
+    const header = document.createElement('li');
+    header.className = 'pending-header';
+    const label = document.createElement('span');
+    label.className = 'pending-label';
+    label.textContent = 'Pending (' + active.length + ')';
+    header.appendChild(label);
+    list.appendChild(header);
   }
 
   active.forEach(task => list.appendChild(createTaskItem(task)));
@@ -358,6 +376,8 @@ document.getElementById('deleted-list').addEventListener('click', e => {
   if (e.target.classList.contains('btn-restore')) restoreTask(li.dataset.id);
   else if (e.target.classList.contains('btn-perm-delete')) permanentDeleteTask(li.dataset.id);
 });
+
+document.getElementById('empty-bin-btn').addEventListener('click', emptyBin);
 
 document.getElementById('deleted-labels-list').addEventListener('click', e => {
   if (e.target.classList.contains('btn-restore')) restoreCategory(e.target.dataset.label);

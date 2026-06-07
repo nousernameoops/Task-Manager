@@ -209,7 +209,7 @@ body {
 }
 
 #category-select {
-  padding: 12px 12px;
+  padding: 12px 28px 12px 12px;
   background: #161b22;
   border: 1px solid #30363d;
   border-radius: 8px;
@@ -218,6 +218,11 @@ body {
   outline: none;
   cursor: pointer;
   transition: border-color 0.15s;
+  appearance: none;
+  -webkit-appearance: none;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' fill='%238b949e' viewBox='0 0 16 16'%3E%3Cpath d='M4.646 5.646a.5.5 0 0 1 .708 0L8 8.293l2.646-2.647a.5.5 0 0 1 .708.708l-3 3a.5.5 0 0 1-.708 0l-3-3a.5.5 0 0 1 0-.708z'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 10px center;
 }
 
 #add-btn {
@@ -334,6 +339,41 @@ body {
   background: #30363d;
 }
 
+
+
+/* ─── Bin Notice ─── */
+.bin-notice {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background: #161b22;
+  border: 1px solid #21262d;
+  border-radius: 8px;
+  padding: 14px 16px;
+  margin-bottom: 20px;
+  font-size: 13px;
+  color: #8b949e;
+}
+
+#empty-bin-btn {
+  padding: 8px 16px;
+  background: #21262d;
+  border: 1px solid #30363d;
+  border-radius: 6px;
+  color: #f85149;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.15s;
+  flex-shrink: 0;
+}
+
+#empty-bin-btn:hover {
+  background: #c93c37;
+  color: #fff;
+  border-color: #c93c37;
+}
+
 /* ─── Task List ─── */
 #task-list {
   list-style: none;
@@ -420,6 +460,21 @@ body {
 
 .task-delete:hover {
   color: #f85149;
+}
+
+/* ─── Pending Header ─── */
+.pending-header {
+  list-style: none;
+  padding: 4px;
+  margin-bottom: 4px;
+}
+
+.pending-label {
+  font-size: 13px;
+  font-weight: 600;
+  color: #8b949e;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
 }
 
 /* ─── Completed Section ─── */

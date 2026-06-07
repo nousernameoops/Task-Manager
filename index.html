@@ -51,7 +51,7 @@
         <form id="task-form">
           <input type="text" id="task-input" placeholder="Add a new task…" autocomplete="off" required />
           <select id="category-select"></select>
-          <button type="submit" id="add-btn">+ Add Task</button>
+          <button type="submit" id="add-btn">Add Task</button>
         </form>
         <div id="category-manager">
           <div class="cm-header">
@@ -69,6 +69,11 @@
       <!-- ─── Bin ─── -->
       <section id="view-bin" class="view">
         <h2>Bin</h2>
+
+        <div id="bin-notice" class="bin-notice">
+          <span>Tasks are automatically deleted after 7 days.</span>
+          <button id="empty-bin-btn">Delete All Now</button>
+        </div>
 
         <h3>Deleted Tasks</h3>
         <ul id="deleted-list"></ul>
