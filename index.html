@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Task Manager</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <div id="app">
+    <header>
+      <h1>tasks</h1>
+      <div class="stats">
+        <span>total: <strong id="total-count">0</strong></span>
+        <span>done: <strong id="done-count">0</strong></span>
+      </div>
+    </header>
+
+    <form id="task-form">
+      <input type="text" id="task-input" placeholder="Add a new task…" autocomplete="off" required />
+      <select id="category-select">
+        <option value="Client Work">Client Work</option>
+        <option value="Bootcamp">Bootcamp</option>
+        <option value="Side Hustle">Side Hustle</option>
+        <option value="Personal Gigs">Personal Gigs</option>
+      </select>
+      <button type="submit" id="add-btn">+ Add Task</button>
+    </form>
+
+    <ul id="task-list"></ul>
+  </div>
+
+  <script src="script.js"></script>
+</body>
+</html>
